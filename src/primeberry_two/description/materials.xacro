@@ -1,0 +1,46 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+    <!-- Define the materials used in the URDF -->
+    <material name="blue">
+        <color rgba="0 0 1 1"/>
+    </material>
+
+    <material name="grey">
+        <color rgba="0.5 0.5 0.5 1"/>
+    </material>
+
+    <material name="red">
+        <color rgba="1 0 0 1"/>
+    </material>
+
+    <!-- Gazebo tags for each link -->
+    <gazebo reference="base_link">
+        <material>Gazebo/DarkGrey</material>
+    </gazebo>
+    <gazebo reference="left_steering_link">
+        <material>Gazebo/Grey</material>
+    </gazebo>
+    <gazebo reference="right_steering_link">
+        <material>Gazebo/Grey</material>
+    </gazebo>
+    <gazebo reference="left_front_wheel">
+        <material>Gazebo/Black</material>
+    </gazebo>
+    <gazebo reference="right_front_wheel">
+        <material>Gazebo/Black</material>
+    </gazebo>
+    <gazebo reference="left_rear_wheel">
+        <material>Gazebo/Black</material>
+    </gazebo>
+    <gazebo reference="right_rear_wheel">
+        <material>Gazebo/Black</material>
+    </gazebo>
+    <gazebo reference="front_steer">
+        <material>Gazebo/Gold</material>
+    </gazebo>
+    <gazebo reference="rear_wheel">
+        <material>Gazebo/Gold</material>
+    </gazebo>
+
+</robot>

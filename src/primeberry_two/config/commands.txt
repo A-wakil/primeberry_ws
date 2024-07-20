@@ -1,0 +1,24 @@
+ros2 launch primeberry_two launch_sim_small.launch.py  world:=./src/primeberry_two/worlds/obstacles.world
+
+ros2 launch rplidar_ros rplidar_a1_launch.py
+
+ros2 launch slam_toolbox online_async_launch.py params_file:=./src/primeberry_two/config/mapper_params_online_async.yaml use_sim_time:=true
+ros2 launch slam_toolbox online_async_launch.py params_file:=./src/rplidar_ros/mapper_params_online_async.yaml use_sim_time:=false (for actual lidar)
+
+##Localization with AMCL
+
+#Install nav2 for ros humble:
+sudo apt install ros-humble-navigation2 ros-humble-nav2-bringup
+
+#Install Twist Mux:
+sudo apt install ros-humble-twist-mux
+
+#Running map_server(takes the map we saved and makes it available on the map topic, hehehe):
+
+ros2 run nav2_map_server map_server --ros-args -p yaml_filename:=/home/dev_ws/my_map_save.yaml -p use_sim_time:=true
+to activate this node, run :
+ros2 run nav2_util lifecycle_bringup map_server
+
+#Running AMCL
+ros2 run nav2_amcl amcl --ros-args -p use_sim_time:=true
+ros2 run nav2_util lifecycle_bringup amcl
