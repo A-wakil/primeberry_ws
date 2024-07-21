@@ -1,11 +1,13 @@
 import rclpy
 from rclpy.node import Node
 from geometry_msgs.msg import Twist
+from std_msgs.msg import Float32
 import RPi.GPIO as GPIO
 from Adafruit_MotorHAT import Adafruit_MotorHAT
 import time
 # import pigpio
 import serial
+import math
 
 class RoverControlNode(Node):
 
@@ -17,6 +19,7 @@ class RoverControlNode(Node):
             self.control_callback,
             10
         )
+        self.steering_angle_pub = self.create_publisher(Float32, "steering_angle", 10)
         self.setup_rover()
 
     def setup_rover(self):
@@ -24,22 +27,19 @@ class RoverControlNode(Node):
             self.mh = Adafruit_MotorHAT()
             self.motor_id = 1
             self.motor2_id = 2
-            # self.servo_pin = 6
-            # pigpio.pi()
-            # pigpio.set_mode(self.servo_pin, pigpio.OUT)
 
             self.motor = self.mh.getMotor(self.motor_id)
             self.motor2 = self.mh.getMotor(self.motor2_id)
 
             self.serial_port = serial.Serial('/dev/ttyACM0', 9600, timeout=1)
             self.send_serial_command("135")
-            # GPIO.setmode(GPIO.BCM)
-            # GPIO.setup(self.servo_pin, GPIO.OUT)
 
             self.speed = 200
             self.direction = Adafruit_MotorHAT.FORWARD
-            # self.pwm = GPIO.PWM(self.servo_pin, 50)
-            # self.pwm.start(7)
+
+            # msg = Float32()
+            # msg.data = 0
+            # self.steering_angle_pub.publish(msg)
         
         except Exception as e:
             self.get_logger().error(f"Error setting up rover: {e}")
@@ -62,8 +62,10 @@ class RoverControlNode(Node):
                 self.turn_right(min(abs(angular_velocity), 1))
             else:
                 self.send_serial_command(f"{135}")
-            # else:
-            #     self.stop_rover()
+                msg = Float32()
+                msg.data = 0
+                self.steering_angle_pub.publish(msg)
+        
         except Exception as e:
             self.get_logger().error(f"Error executing command with velocities - Linear: {linear_velocity}, Angular: {angular_velocity}: {e}")
             self.stop_rover()
@@ -85,25 +87,26 @@ class RoverControlNode(Node):
         self.motor2.run(Adafruit_MotorHAT.BACKWARD)
 
     def turn_left(self, angular_velocity):
-        duty_cycle = 135 - ((angular_velocity / 1) * 55)  # Scale angular_velocity to range
+        
+        angle_change = ((angular_velocity / 1) * 55)
+        duty_cycle = 135 - angle_change  # Scale angular_velocity to range
+        msg = Float32()
+        msg.data = math.radians(angle_change)
+        self.steering_angle_pub.publish(msg)
         self.send_serial_command(f"{duty_cycle}")
-        # self.pwm.ChangeDutyCycle(duty_cycle)
-        # time.sleep(1)
-        # self.pwm.ChangeDutyCycle(7)
 
     def turn_right(self, angular_velocity):
-        duty_cycle = 135 + ((angular_velocity / 1) * 55)  # Scale angular_velocity to range
+        angle_change = ((angular_velocity / 1) * 55)
+        duty_cycle = 135 + angle_change  # Scale angular_velocity to range
+        msg = Float32()
+        msg.data = -math.radians(angle_change)
+        self.steering_angle_pub.publish(msg)
         self.send_serial_command(f"{duty_cycle}")
-        # self.pwm.ChangeDutyCycle(duty_cycle)
-        # time.sleep(1)
-        # self.pwm.ChangeDutyCycle(7)
 
     def stop_rover(self):
         self.motor.run(Adafruit_MotorHAT.RELEASE)
         self.motor2.run(Adafruit_MotorHAT.RELEASE)
         self.send_serial_command(f"{135}")
-        # self.pwm.stop()
-        # GPIO.cleanup()
 
     def destroy_node(self):
         self.stop_rover()
