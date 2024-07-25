@@ -78,7 +78,7 @@ class RPlidarNode : public rclcpp::Node
         this->declare_parameter<int>("udp_port",8089);
         this->declare_parameter<std::string>("serial_port", "/dev/ttyUSB0");
         this->declare_parameter<int>("serial_baudrate",1000000);
-        this->declare_parameter<std::string>("frame_id","laser_frame");
+        this->declare_parameter<std::string>("frame_id","laser");
         this->declare_parameter<bool>("inverted", false);
         this->declare_parameter<bool>("angle_compensate", false);
         this->declare_parameter<bool>("flip_x_axis", false);
@@ -94,7 +94,7 @@ class RPlidarNode : public rclcpp::Node
         this->get_parameter_or<int>("udp_port", udp_port, 8089);
         this->get_parameter_or<std::string>("serial_port", serial_port, "/dev/ttyUSB0"); 
         this->get_parameter_or<int>("serial_baudrate", serial_baudrate, 1000000/*256000*/);//ros run for A1 A2, change to 256000 if A3
-        this->get_parameter_or<std::string>("frame_id", frame_id, "laser_frame");
+        this->get_parameter_or<std::string>("frame_id", frame_id, "laser");
         this->get_parameter_or<bool>("inverted", inverted, false);
         this->get_parameter_or<bool>("angle_compensate", angle_compensate, false);
         this->get_parameter_or<bool>("flip_x_axis", flip_x_axis, false);

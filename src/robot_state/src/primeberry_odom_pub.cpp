@@ -140,9 +140,9 @@ void update_odom() {
     odomNew.pose.pose.orientation.z += 2 * PI;
   }
 
-  odomNew.header.stamp = rclcpp::Time();
-  odomNew.twist.twist.linear.x = cycleDistance / (odomNew.header.stamp.toSec() - odomOld.header.stamp.toSec());
-  odomNew.twist.twist.angular.z = cycleAngle / (odomNew.header.stamp.toSec() - odomOld.header.stamp.toSec());
+  odomNew.header.stamp = rclcpp::Clock().now();
+  odomNew.twist.twist.linear.x = cycleDistance / (odomNew.header.stamp.sec - odomOld.header.stamp.sec);
+  odomNew.twist.twist.angular.z = cycleAngle / (odomNew.header.stamp.sec - odomOld.header.stamp.sec);
 
   odomOld.pose.pose.position.x = odomNew.pose.pose.position.x;
   odomOld.pose.pose.position.y = odomNew.pose.pose.position.y;
